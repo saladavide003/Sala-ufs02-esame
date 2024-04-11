@@ -39,8 +39,7 @@ public class Main {
                 switch (command) {
                     case "ALL":
                         // Invia la lista di tutti gli alberghi
-                        for (Hotel hotel) out.println(Hotel.toString());
-                        break;
+                        for (Hotel hotel;;) out.println(Hotel.toString());
 
                     case "SORTED_BY_NAME":
                         // Invia la lista di tutti gli alberghi in ordine alfabetico

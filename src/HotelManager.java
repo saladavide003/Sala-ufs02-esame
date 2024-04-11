@@ -18,7 +18,7 @@ public class HotelManager {
     }
 
     //controlla se un hotel ha la spa
-    public Hotel hotelConSpa() {
+    public int hotelConSpa() {
         //fa un ciclo per ogni elemento di hotels
         for (Hotel hotel : hotels) {
             if (Hotel.getSpa()) {

@@ -23,7 +23,7 @@ public class Hotel {
     }
 
     //spa true/false
-    public boolean getSpa() {
+    public static boolean getSpa() {
         return spa; //boolean
     }
 
@@ -33,7 +33,7 @@ public class Hotel {
     }
 
     @Override
-    public String toString() {
+    public static String toString() {
         return ("Nome hotel: " + nome + ", numero stanze tot: " + numeroStanze + ", spa presente: " + spa + ", media recensioni: " + mediaRecensioni);
     }
 }
