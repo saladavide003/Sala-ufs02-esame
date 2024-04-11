@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class HotelManager {
@@ -8,7 +9,6 @@ public class HotelManager {
         this.hotels = new ArrayList<>();
     }
 
-    //popola la list
     public void aggiungiHotel(Hotel hotel) {
         hotels.add(hotel);
     }
@@ -17,14 +17,19 @@ public class HotelManager {
         return hotels;
     }
 
-    //controlla se un hotel ha la spa
-    public int hotelConSpa() {
-        //fa un ciclo per ogni elemento di hotels
+    public List<Hotel> getHotelsSortedByName() {
+        List<Hotel> sortedList = new ArrayList<>(hotels);
+        sortedList.sort(Comparator.comparing(Hotel::getNome));
+        return sortedList;
+    }
+
+    public List<Hotel> getHotelsWithSpa() {
+        List<Hotel> spaHotels = new ArrayList<>();
         for (Hotel hotel : hotels) {
-            if (Hotel.getSpa()) {
-                System.out.println(toString());
+            if (hotel.isSpaPresente()) {
+                spaHotels.add(hotel);
             }
         }
-    return 0;
+        return spaHotels;
     }
 }

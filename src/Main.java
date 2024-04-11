@@ -1,18 +1,17 @@
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 public class Main {
     private static final int PORT = 1234;
 
     public static void main(String[] args) {
-        try {
-            ServerSocket serverSocket = new ServerSocket(PORT);
+        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("Server in ascolto sulla porta " + PORT + "...");
 
             HotelManager hotelManager = new HotelManager();
 
-            //aggiunta degli alberghi
-            //nome albergo, numero stanze, spa presente, media recensioni da 1 a 10
+            // Aggiunta degli hotel
             hotelManager.aggiungiHotel(new Hotel("Le Porte di Venezia", 100, true, 5));
             hotelManager.aggiungiHotel(new Hotel("Sette Nani", 70, true, 5));
             hotelManager.aggiungiHotel(new Hotel("Mi Casa Es Tu Casa", 40, true, 4));
@@ -21,40 +20,57 @@ public class Main {
             hotelManager.aggiungiHotel(new Hotel("Rustico di Scampia", 30, true, 4));
             hotelManager.aggiungiHotel(new Hotel("Bella Napoli", 60, true, 2));
 
-            do {
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("Nuova connessione da: " + clientSocket.getInetAddress().getHostAddress());
+            while (true) {
+                try (Socket clientSocket = serverSocket.accept();
+                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                     PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
 
-                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+                    System.out.println("Nuova connessione da: " + clientSocket.getInetAddress().getHostAddress());
 
-                String command = in.readLine();
-                System.out.println("Comando ricevuto dal client: " + command);
-                //trasforma tutto in maiuscolo il comando
-                command = command.toUpperCase();
-                //toglie gli spazi bianchi prima e dopo il comando
-                command = command.trim();
+                    String command = in.readLine();
+                    System.out.println("Comando ricevuto dal client: " + command);
 
-                //selezione di cosa fare
-                switch (command) {
-                    case "ALL":
-                        // Invia la lista di tutti gli alberghi
-                        for (Hotel hotel;;) out.println(Hotel.toString());
+                    if (command != null) {
+                        command = command.toUpperCase().trim();
 
-                    case "SORTED_BY_NAME":
-                        // Invia la lista di tutti gli alberghi in ordine alfabetico
-                        break;
+                        switch (command) {
+                            case "ALL":
+                                // Invia la lista di tutti gli hotel
+                                for (Hotel hotel : hotelManager.getHotels()) {
+                                    out.println(hotel.toString());
+                                }
+                                break;
 
-                    case "WITH_SPA":
-                        // Invia gli alberghi muniti di Spa
-                        hotelManager.hotelConSpa();
-                        break;
-                    default:
-                        out.println("Nessun albergo trovato");
+                            case "SORTED_BY_NAME":
+                                // Invia la lista di tutti gli hotel ordinati per nome
+                                List<Hotel> sortedHotelsByName = hotelManager.getHotelsSortedByName();
+                                for (Hotel hotel : sortedHotelsByName) {
+                                    out.println(hotel.toString());
+                                }
+                                break;
+
+                            case "WITH_SPA":
+                                // Invia gli hotel con Spa
+                                List<Hotel> spaHotels = hotelManager.getHotelsWithSpa();
+                                if (!spaHotels.isEmpty()) {
+                                    for (Hotel hotel : spaHotels) {
+                                        out.println(hotel.toString());
+                                    }
+                                } else {
+                                    out.println("Nessun hotel con Spa presente");
+                                }
+                                break;
+
+                            default:
+                                out.println("Comando non valido");
+                        }
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                clientSocket.close();
-                out.println("");
-            } while (true);
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
